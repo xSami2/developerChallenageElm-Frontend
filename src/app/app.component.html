@@ -1,13 +1,14 @@
 
-<button class="btn"  (click)="createDialog(dialogElement)">Create CarShowroom</button>
+
+<button class="btn"  (click)="createDialog(dialogElement)">Create Car Showroom</button>
 <dialog  #dialogElement class="modal">
   <div class="modal-box  w-80 max-w-5xl">
     <div (click)="closeDialog(dialogElement , form)" method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </div>
-    <h3 class="text-lg font-bold">Create CarShowroom!</h3>
+    <h3 class="text-lg font-bold">{{ dialogMode }} Car Showroom!</h3>
 
-    <form (submit)="onCreateCarShowroom(newCarShowroom , form , dialogElement)" #form="ngForm">
+    <form (submit)="submitCarShowroomForm(newCarShowroom , form , dialogElement)" #form="ngForm">
       <!-- Car Showroom Name -->
       <label class="form-control w-full mt-2">
         <div class="label">
@@ -20,6 +21,7 @@
           required
           maxlength="100"
           placeholder="Type here"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
           class="input input-bordered w-full max-w-xs"
           #showroomName="ngModel"
         />
@@ -38,9 +40,10 @@
           [(ngModel)]="newCarShowroom.commercialRegistrationNumber"
           name="registrationNumber"
           required
-          (click)="registrationNumberErrorMsgVisbility = false"
+          (click)="commercialRegistrationNumberErrorMsg = false"
           maxlength="10"
           pattern="^[0-9]{10}$"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
           #registrationNumber="ngModel"
@@ -48,7 +51,7 @@
         <div *ngIf="registrationNumber.invalid && registrationNumber.touched" class="text-red-500 text-sm mt-1">
           Commercial Registration Number is required and must be 10 digits.
         </div>
-        <div class="text-red-500 text-sm mt-1" *ngIf="registrationNumberErrorMsgVisbility">
+        <div class="text-red-500 text-sm mt-1" *ngIf="commercialRegistrationNumberErrorMsg">
           Commercial Registration Number is Already Taken
         </div>
       </label>
@@ -61,6 +64,7 @@
         <input
           type="text"
           [(ngModel)]="newCarShowroom.managerName"
+          [disabled]="dialogMode === 'View'"
           name="managerName"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
@@ -78,6 +82,7 @@
           name="contactNumber"
           required
           pattern="^[0-9]{10,15}$"
+          [disabled]="dialogMode === 'View'"
           maxlength="15"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
@@ -96,6 +101,7 @@
         <textarea
           [(ngModel)]="newCarShowroom.address"
           name="address"
+          [disabled]="dialogMode === 'View'"
           class="textarea textarea-bordered h-24"
           maxlength="255"
           placeholder="Address"
@@ -103,7 +109,7 @@
       </label>
 
       <div class="modal-action">
-          <button class="btn" type="submit" [disabled]="form.invalid">Create</button>
+          <button class="btn" type="submit" [disabled]="form.invalid" *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit</button>
       </div>
     </form>
 
@@ -112,13 +118,51 @@
   </div>
 </dialog>
 <!-- Data Table -->
-<div class="overflow-x-auto h-[53rem]">
+<div class="overflow-x-auto h-[39rem]">
   <table class="table">
     <thead>
     <tr>
-      <th>Name</th>
-      <th>Commercial Registration Number</th>
-      <th>Contact Number</th>
+      <label class="flex justify-start" >
+        <th (click)="sortByName()">
+          <div class="flex w-8">
+            <label class="swap flex justify-start">
+              Name
+              <div class="flex" *ngIf="nameSortVisibility">
+                <!-- Arrow indicators for sorting -->
+                <div *ngIf="ascSortName">↑</div> <!-- Ascending -->
+                <div *ngIf="!ascSortName">↓</div> <!-- Descending -->
+              </div>
+            </label>
+          </div>
+        </th>
+      </label>
+      <th (click)="sortByCommercialRegistrationNumber()">
+        <div class="flex w-8">
+          <label class="swap flex justify-start">
+            Commercial Registration Number
+            <div class="flex" *ngIf="commercialRegistrationNumberSortVisibility">
+              <!-- Arrow indicators for sorting -->
+              <div *ngIf="ascSortCommercialRegistrationNumber">↑</div> <!-- Ascending -->
+              <div *ngIf="!ascSortCommercialRegistrationNumber">↓</div> <!-- Descending -->
+            </div>
+          </label>
+        </div>
+      </th>
+
+      <th (click)="sortByContactNumber()">
+        <div class="flex w-8">
+          <label class="swap flex justify-start">
+            Contact Number
+            <div class="flex" *ngIf="contactNumberSortVisibility">
+              <!-- Arrow indicators for sorting -->
+              <div *ngIf="ascSortContactNumber">↑</div> <!-- Ascending -->
+              <div *ngIf="!ascSortContactNumber">↓</div> <!-- Descending -->
+            </div>
+          </label>
+        </div>
+      </th>
+
+
     </tr>
     </thead>
     <tbody>
@@ -128,9 +172,9 @@
       <td>{{carShowroom.commercialRegistrationNumber }}</td>
       <td> {{carShowroom.contactNumber}} </td>
       <td>
-        <button class="btn btn-ghost btn-xs" (click)="viewCarShowroom(carShowroom)">View</button>
-        <button class="btn btn-ghost btn-xs">Edit</button>
-        <button class="btn btn-ghost btn-xs">Delete</button>
+        <button class="btn btn-ghost btn-xs" (click)="viewCarShowroomDialog(carShowroom , form , dialogElement)">View</button>
+        <button class="btn btn-ghost btn-xs" (click)="updateCarShowroomDialog(carShowroom , form , dialogElement)">Edit</button>
+        <button class="btn btn-ghost btn-xs" (click)="deleteCarShowroom(carShowroom.id)" >Delete</button>
       </td>
     </tr>
     </tbody>

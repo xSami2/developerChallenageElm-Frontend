@@ -26,10 +26,34 @@ export class CarShowroomService {
     }
   }
 
-  async getCarShowroomById(carShowroomId: string) {
+  async getCarShowroomById(carShowroomId: string | undefined) {
     try {
-      const response = await axios.get(`http://localhost:9090/carshowroom/{$carShowroomId}`);
-      console.log(response)
+      const response = await axios.get(`http://localhost:9090/carshowroom/${carShowroomId}`);
+      return response;
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
+  }
+
+  async deleteCarShowroomById(carShowroomId: string | undefined) {
+    try {
+      const response = await axios.delete(`http://localhost:9090/carshowroom/${carShowroomId}`);
+      return response;
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
+  }
+
+  async getAllCarShowroomSorted(sortBy: string ,sortDirection:string) {
+    try {
+      const response = await axios.get(`http://localhost:9090/carshowroom/sorted`, {
+        params:{
+          sortBy:sortBy,
+          sortDirection:sortDirection
+        }
+      });
       return response;
     } catch (error) {
       console.error('Error occurred:', error);

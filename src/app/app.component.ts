@@ -15,7 +15,16 @@ import {Element} from '@angular/compiler';
 })
 export class AppComponent {
 
-  registrationNumberErrorMsgVisbility:boolean = false
+  nameSortVisibility:boolean = false;
+  commercialRegistrationNumberSortVisibility:boolean = false;
+  contactNumberSortVisibility:boolean = false;
+
+  ascSortName:boolean = false;
+  ascSortCommercialRegistrationNumber:boolean = false;
+  ascSortContactNumber:boolean = false;
+
+  dialogMode:String = "";
+  commercialRegistrationNumberErrorMsg:boolean = false
   newCarShowroom: CarShowroom = new CarShowroom();
   carShowroomList: CarShowroom[] = []
   Toast = Swal.mixin({
@@ -42,10 +51,11 @@ export class AppComponent {
     )
   }
 
-  async onCreateCarShowroom(carShowroom: CarShowroom, form: any , dialog:HTMLDialogElement) {
+  async submitCarShowroomForm(carShowroom: CarShowroom, form: any , dialog:HTMLDialogElement) {
+
+
     try {
       const response = await this.carShowroomService.createCarShowroom(carShowroom);
-
       if (response.status === 200) {
         this.Toast.fire({
           icon: 'success',
@@ -53,6 +63,8 @@ export class AppComponent {
         });
         form.reset();
         dialog.close()
+
+        this.updateCarShowroom(response.data.data);
 
 
       } else if (response.status === 201) {
@@ -67,7 +79,7 @@ export class AppComponent {
       }
 
     } catch (error) {
-      this.registrationNumberErrorMsgVisbility = true
+      this.commercialRegistrationNumberErrorMsg = true
       this.Toast.fire({
         icon: 'error',
         title: 'Commercial Registration Number is already taken',
@@ -76,7 +88,8 @@ export class AppComponent {
   }
 
   createDialog(dialogElement:HTMLDialogElement) {
-    this.registrationNumberErrorMsgVisbility = false
+   this.dialogMode = "Create"
+    this.commercialRegistrationNumberErrorMsg = false
     dialogElement.showModal()
   }
   closeDialog(dialogElement:HTMLDialogElement , form:any) {
@@ -84,10 +97,84 @@ export class AppComponent {
     dialogElement.close()
   }
 
-  viewCarShowroom(carShowroom: CarShowroom) {
-    console.log(carShowroom)
+  async updateCarShowroomDialog(carShowroom: CarShowroom , form:any , dialog:HTMLDialogElement) {
+    this.dialogMode = "Update"
+    dialog.showModal()
+    console.log(carShowroom.id)
+    let response = await this.carShowroomService.getCarShowroomById(carShowroom.id);
+    this.newCarShowroom = response.data.data;
+  }
+
+  async viewCarShowroomDialog(carShowroom: CarShowroom , form:any , dialog:HTMLDialogElement) {
+    this.dialogMode = "View"
+    dialog.showModal()
+    let response = await this.carShowroomService.getCarShowroomById(carShowroom.id);
+    this.newCarShowroom = response.data.data;
+  }
+
+  async deleteCarShowroom(carShowroomId: string | undefined) {
+    let response = await this.carShowroomService.deleteCarShowroomById(carShowroomId);
+    if (response.status === 200) {
+      const index = this.carShowroomList.findIndex(showroom => showroom.id === carShowroomId);
+      this.carShowroomList.splice(index, 1);
+      this.Toast.fire({
+        icon: 'success',
+        title: 'Deleted Car showroom successfully',
+      });
+    }
+  }
+
+ async sortByName()  {
+    this.nameSortVisibility = true;
+    if (this.ascSortName){
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("name" ,"DESC")
+      this.carShowroomList = respones.data.data
+    }else{
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("name" ,"ASC")
+      this.carShowroomList = respones.data.data
+    }
+    this.ascSortName = !this.ascSortName
+  }
+
+  async sortByCommercialRegistrationNumber()  {
+    this.commercialRegistrationNumberSortVisibility = true
+    if (this.ascSortCommercialRegistrationNumber){
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("commercialRegistrationNumber" ,"DESC")
+      this.carShowroomList = respones.data.data
+    }else{
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("commercialRegistrationNumber" ,"ASC")
+      this.carShowroomList = respones.data.data
+    }
+    this.ascSortCommercialRegistrationNumber = !this.ascSortCommercialRegistrationNumber
+
+
+  }
+
+  async sortByContactNumber()  {
+    this.contactNumberSortVisibility = true
+    if (this.ascSortContactNumber){
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("contactNumber" ,"DESC")
+      this.carShowroomList = respones.data.data
+    }else{
+      let respones = await this.carShowroomService.getAllCarShowroomSorted("contactNumber" ,"ASC")
+      this.carShowroomList = respones.data.data
+    }
+    this.ascSortContactNumber = !this.ascSortContactNumber
   }
 
 
 
+
+
+
+  updateCarShowroom(updatedShowroom: CarShowroom) {
+    const index = this.carShowroomList.findIndex(showroom => showroom.id === updatedShowroom.id);
+    if (index !== -1) {
+      this.carShowroomList[index] = { ...this.carShowroomList[index], ...updatedShowroom };
+    }
+  }
+
 }
+
+
+

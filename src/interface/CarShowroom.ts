@@ -1,7 +1,7 @@
 import {Car} from './Car';
 
 export class CarShowroom {
-  uuid?: string;
+  id?: string;
   name: string;
   commercialRegistrationNumber: string;
   managerName?: string;
