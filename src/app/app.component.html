@@ -1,0 +1,143 @@
+
+<button class="btn" onclick="my_modal_4.showModal()">Create CarShowroom</button>
+<dialog  id="my_modal_4" class="modal">
+  <div class="modal-box  w-80 max-w-5xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="text-lg font-bold">Create CarShowroom!</h3>
+
+    <form (submit)="onCreateCarShowroom(newCarShowroom , form)" #form="ngForm">
+      <!-- Car Showroom Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Showroom Name</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.name"
+          name="showroomName"
+          required
+          maxlength="100"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #showroomName="ngModel"
+        />
+        <div *ngIf="showroomName.invalid && showroomName.touched" class="text-red-500 text-sm">
+          Car Showroom Name is required.
+        </div>
+      </label>
+
+      <!-- Commercial Registration Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Commercial Registration Number</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.commercialRegistrationNumber"
+          name="registrationNumber"
+          required
+          maxlength="10"
+          pattern="^[0-9]{10}$"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #registrationNumber="ngModel"
+        />
+        <div *ngIf="registrationNumber.invalid && registrationNumber.touched" class="text-red-500 text-sm">
+          Commercial Registration Number is required and must be 10 digits.
+        </div>
+      </label>
+
+      <!-- Manager Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Manager Name</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.managerName"
+          name="managerName"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+        />
+      </label>
+
+      <!-- Contact Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Contact Number</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.contactNumber"
+          name="contactNumber"
+          required
+          pattern="^[0-9]{10,15}$"
+          maxlength="15"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #contactNumber="ngModel"
+        />
+        <div *ngIf="contactNumber.invalid && contactNumber.touched" class="text-red-500 text-sm">
+          Contact Number is required and must be between 10 and 15 digits.
+        </div>
+      </label>
+
+      <!-- Address -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Address</span>
+        </div>
+        <textarea
+          [(ngModel)]="newCarShowroom.address"
+          name="address"
+          class="textarea textarea-bordered h-24"
+          maxlength="255"
+          placeholder="Address"
+        ></textarea>
+      </label>
+
+      <div class="modal-action">
+          <button class="btn" type="submit" [disabled]="form.invalid">Create</button>
+      </div>
+    </form>
+
+
+
+  </div>
+</dialog>
+<!-- Data Table -->
+<div class="overflow-x-auto h-[53rem]">
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Commercial Registration Number</th>
+      <th>Contact Number</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Example row binding data -->
+    <tr *ngFor="let carShowroom of carShowroomList">
+      <td> {{carShowroom.name}} </td>
+      <td>{{carShowroom.commercialRegistrationNumber }}</td>
+      <td> {{carShowroom.contactNumber}} </td>
+      <td>
+        <button class="btn btn-ghost btn-xs">View</button>
+        <button class="btn btn-ghost btn-xs">Edit</button>
+        <button class="btn btn-ghost btn-xs">Delete</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination (Optional) -->
+<div class="flex justify-center">
+  <div class="join">
+    <button class="join-item btn">«</button>
+    <button class="join-item btn">Page 1</button>
+    <button class="join-item btn">»</button>
+  </div>
+</div>
