@@ -1,13 +1,13 @@
 
-<button class="btn" onclick="my_modal_4.showModal()">Create CarShowroom</button>
-<dialog  id="my_modal_4" class="modal">
+<button class="btn"  (click)="createDialog(dialogElement)">Create CarShowroom</button>
+<dialog  #dialogElement class="modal">
   <div class="modal-box  w-80 max-w-5xl">
-    <form method="dialog">
+    <div (click)="closeDialog(dialogElement , form)" method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
+    </div>
     <h3 class="text-lg font-bold">Create CarShowroom!</h3>
 
-    <form (submit)="onCreateCarShowroom(newCarShowroom , form)" #form="ngForm">
+    <form (submit)="onCreateCarShowroom(newCarShowroom , form , dialogElement)" #form="ngForm">
       <!-- Car Showroom Name -->
       <label class="form-control w-full mt-2">
         <div class="label">
@@ -38,14 +38,18 @@
           [(ngModel)]="newCarShowroom.commercialRegistrationNumber"
           name="registrationNumber"
           required
+          (click)="registrationNumberErrorMsgVisbility = false"
           maxlength="10"
           pattern="^[0-9]{10}$"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
           #registrationNumber="ngModel"
         />
-        <div *ngIf="registrationNumber.invalid && registrationNumber.touched" class="text-red-500 text-sm">
+        <div *ngIf="registrationNumber.invalid && registrationNumber.touched" class="text-red-500 text-sm mt-1">
           Commercial Registration Number is required and must be 10 digits.
+        </div>
+        <div class="text-red-500 text-sm mt-1" *ngIf="registrationNumberErrorMsgVisbility">
+          Commercial Registration Number is Already Taken
         </div>
       </label>
 
@@ -124,7 +128,7 @@
       <td>{{carShowroom.commercialRegistrationNumber }}</td>
       <td> {{carShowroom.contactNumber}} </td>
       <td>
-        <button class="btn btn-ghost btn-xs">View</button>
+        <button class="btn btn-ghost btn-xs" (click)="viewCarShowroom(carShowroom)">View</button>
         <button class="btn btn-ghost btn-xs">Edit</button>
         <button class="btn btn-ghost btn-xs">Delete</button>
       </td>
