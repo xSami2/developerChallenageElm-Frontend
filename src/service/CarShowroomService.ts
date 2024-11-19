@@ -3,18 +3,21 @@ import axios from 'axios';
 import {CarShowroom} from '../interface/CarShowroom';
 import {catchError, from, map} from 'rxjs';  // Import Axios
 import Swal from 'sweetalert2'
+import {Car} from '../interface/Car';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarShowroomService {
 
-  carShowroomList: CarShowroom[]  = new Array<CarShowroom>();
+  carShowroomNameList: CarShowroom[]  = new Array<CarShowroom>();
   savedCarShowroom: CarShowroom = new CarShowroom();
 
   constructor() {
     this.getAllCarShowroom()
   }
+
+
 
   async createCarShowroom(carShowroomData: CarShowroom) {
     try {

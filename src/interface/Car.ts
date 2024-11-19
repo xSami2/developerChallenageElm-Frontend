@@ -2,21 +2,21 @@ import {CarShowroom} from "./CarShowroom";
 
 export class Car {
   id?: string;
-  vin :string
+  vehicleIdentificationNumber :string
   maker: string;
   model: string;
   modelYear: number;
   price: number;
-  carShowroom: string;
+  carShowroom: CarShowroom;
   created_at?: Date;
   updated_at?: Date;
 
   constructor() {
-   this.vin = "";
+   this.vehicleIdentificationNumber = "";
     this.maker = "";
       this.model = "";
       this.modelYear = 0;
       this.price = 0;
-    this.carShowroom = "";
+    this.carShowroom = new CarShowroom();
   }
 }

@@ -23,15 +23,27 @@ export class CarManagementComponent {
 
 
 
+
+
+
   newCar:Car = new Car()
-  carShowroomNamesList:String[] = []
+  carShowroomsNameList:CarShowroom[] = []
+  carList:Car[] = []
   dialogMode:String = "";
+
+  ngOnInit() {
+    this.carService.getAllCar().subscribe(
+      (carList: Car[]) => {
+        this.carList = carList;
+      }
+    )
+  }
 
  async createDialog(dialogElement:HTMLDialogElement) {
     this.dialogMode = "Create"
     let responses = await this.carService.getcCrShowroomNamesList()
-    this.carShowroomNamesList = responses.data.data;
-   console.log(this.carShowroomNamesList)
+    this.carShowroomsNameList = responses.data.data;
+   console.log(this.carShowroomsNameList)
     dialogElement.showModal()
   }
 
@@ -40,8 +52,11 @@ export class CarManagementComponent {
     dialogElement.close()
   }
 
-  async submitCarForm(carShowroom: Car, form: any , dialog:HTMLDialogElement) {
-    console.log(carShowroom)
+  async submitCarForm(newCar: Car, form: any , dialog:HTMLDialogElement) {
+    console.log(newCar)
+   let respones = await this.carService.saveCar(newCar)
+    console.log(newCar)
+    console.log(respones)
   }
 
 }
