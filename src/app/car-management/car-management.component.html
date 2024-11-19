@@ -1,0 +1,139 @@
+<button class="btn"  (click)="createDialog(dialogElement)">Create Car</button>
+<dialog  #dialogElement class="modal">
+  <div class="modal-box  w-80 max-w-5xl">
+    <div (click)="closeDialog(dialogElement , form)" method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </div>
+    <h3 class="text-lg font-bold">{{ dialogMode }} Car Showroom!</h3>
+
+    <form (submit)="submitCarForm(newCar , form , dialogElement)" #form="ngForm">
+
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Vehicle Identification Number</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCar.vin"
+          name="vin"
+          required
+          maxlength="25"
+          placeholder="Type here"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
+          class="input input-bordered w-full max-w-xs"
+          #vin="ngModel"
+        />
+        <div *ngIf="vin.invalid && vin.touched" class="text-red-500 text-sm">
+          Vehicle Identification Number is Required
+        </div>
+      </label>
+
+      <!-- Car Showroom Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Maker</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCar.maker"
+          name="carMaker"
+          required
+          maxlength="25"
+          placeholder="Type here"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
+          class="input input-bordered w-full max-w-xs"
+          #carMaker="ngModel"
+        />
+        <div *ngIf="carMaker.invalid && carMaker.touched" class="text-red-500 text-sm">
+          Car Maker is required.
+        </div>
+      </label>
+
+      <!-- Commercial Registration Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Model</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCar.model"
+          name="carModel"
+          required
+          maxlength="25"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #carModel="ngModel"
+        />
+        <div *ngIf="carModel.invalid && carModel.touched" class="text-red-500 text-sm mt-1">
+          Car Model is required.
+        </div>
+      </label>
+
+      <!-- Manager Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Model Year</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCar.modelYear"
+          [disabled]="dialogMode === 'View'"
+          required
+          maxlength="4"
+          pattern="^[0-9]{4}$"
+          name="modelYear"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #modelYear=ngModel
+        />
+        <div *ngIf="modelYear.touched && modelYear.invalid" class="text-red-500 text-sm mt-1">
+          Model Year is required and must be numeric.
+        </div>
+      </label>
+
+      <!-- Contact Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Price</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCar.price"
+          name="carPrice"
+          required
+          [disabled]="dialogMode === 'View'"
+          maxlength="15"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #carPrice="ngModel"
+        />
+        <div *ngIf="carPrice.invalid && carPrice.touched" class="text-red-500 text-sm">
+          Contact Number is required and must be between 10 and 15 digits.
+        </div>
+      </label>
+
+      <!-- Address -->
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Select Car Showroom</span>
+        </div>
+        <select class="select select-bordered"
+                [(ngModel)]="newCar.carShowroom"
+                name="carShowroom"
+                [disabled]="dialogMode === 'View'">
+          <!-- Loop through carShowroomNamesList and create an option for each one -->
+          <option *ngFor="let carShowroom of carShowroomNamesList" [value]="carShowroom">{{ carShowroom }}</option>
+        </select>
+
+      </label>
+
+      <div class="modal-action">
+        <button class="btn" type="submit" [disabled]="form.invalid" *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit</button>
+      </div>
+    </form>
+
+
+
+  </div>
+</dialog>

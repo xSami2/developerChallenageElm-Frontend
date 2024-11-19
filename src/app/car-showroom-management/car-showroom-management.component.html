@@ -1,0 +1,190 @@
+
+<button class="btn"  (click)="createDialog(dialogElement)">Create Car Showroom</button>
+<dialog  #dialogElement class="modal">
+  <div class="modal-box  w-80 max-w-5xl">
+    <div (click)="closeDialog(dialogElement , form)" method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </div>
+    <h3 class="text-lg font-bold">{{ dialogMode }} Car Showroom!</h3>
+
+    <form (submit)="submitCarShowroomForm(newCarShowroom , form , dialogElement)" #form="ngForm">
+      <!-- Car Showroom Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Showroom Name</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.name"
+          name="showroomName"
+          required
+          maxlength="100"
+          placeholder="Type here"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
+          class="input input-bordered w-full max-w-xs"
+          #showroomName="ngModel"
+        />
+        <div *ngIf="showroomName.invalid && showroomName.touched" class="text-red-500 text-sm">
+          Car Showroom Name is required.
+        </div>
+      </label>
+
+      <!-- Commercial Registration Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Commercial Registration Number</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.commercialRegistrationNumber"
+          name="registrationNumber"
+          required
+          (click)="commercialRegistrationNumberErrorMsg = false"
+          maxlength="10"
+          pattern="^[0-9]{10}$"
+          [disabled]="dialogMode === 'Update' || dialogMode === 'View'"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #registrationNumber="ngModel"
+        />
+        <div *ngIf="registrationNumber.invalid && registrationNumber.touched" class="text-red-500 text-sm mt-1">
+          Commercial Registration Number is required and must be 10 digits.
+        </div>
+        <div class="text-red-500 text-sm mt-1" *ngIf="commercialRegistrationNumberErrorMsg">
+          Commercial Registration Number is Already Taken
+        </div>
+      </label>
+
+      <!-- Manager Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Manager Name</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.managerName"
+          [disabled]="dialogMode === 'View'"
+          name="managerName"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+        />
+      </label>
+
+      <!-- Contact Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Contact Number</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="newCarShowroom.contactNumber"
+          name="contactNumber"
+          required
+          pattern="^[0-9]{10,15}$"
+          [disabled]="dialogMode === 'View'"
+          maxlength="15"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #contactNumber="ngModel"
+        />
+        <div *ngIf="contactNumber.invalid && contactNumber.touched" class="text-red-500 text-sm">
+          Contact Number is required and must be between 10 and 15 digits.
+        </div>
+      </label>
+
+      <!-- Address -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Address</span>
+        </div>
+        <textarea
+          [(ngModel)]="newCarShowroom.address"
+          name="address"
+          [disabled]="dialogMode === 'View'"
+          class="textarea textarea-bordered h-24"
+          maxlength="255"
+          placeholder="Address"
+        ></textarea>
+      </label>
+
+      <div class="modal-action">
+        <button class="btn" type="submit" [disabled]="form.invalid" *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit</button>
+      </div>
+    </form>
+
+
+
+  </div>
+</dialog>
+<!-- Data Table -->
+<div class="overflow-x-auto h-[39rem]">
+  <table class="table">
+    <thead>
+    <tr>
+      <label class="flex justify-start" >
+        <th (click)="sortByName()">
+          <div class="flex w-8">
+            <label class="swap flex justify-start">
+              Name
+              <div class="flex" *ngIf="nameSortVisibility">
+                <!-- Arrow indicators for sorting -->
+                <div *ngIf="ascSortName">↑</div> <!-- Ascending -->
+                <div *ngIf="!ascSortName">↓</div> <!-- Descending -->
+              </div>
+            </label>
+          </div>
+        </th>
+      </label>
+      <th (click)="sortByCommercialRegistrationNumber()">
+        <div class="flex w-8">
+          <label class="swap flex justify-start">
+            Commercial Registration Number
+            <div class="flex" *ngIf="commercialRegistrationNumberSortVisibility">
+              <!-- Arrow indicators for sorting -->
+              <div *ngIf="ascSortCommercialRegistrationNumber">↑</div> <!-- Ascending -->
+              <div *ngIf="!ascSortCommercialRegistrationNumber">↓</div> <!-- Descending -->
+            </div>
+          </label>
+        </div>
+      </th>
+
+      <th (click)="sortByContactNumber()">
+        <div class="flex w-8">
+          <label class="swap flex justify-start">
+            Contact Number
+            <div class="flex" *ngIf="contactNumberSortVisibility">
+              <!-- Arrow indicators for sorting -->
+              <div *ngIf="ascSortContactNumber">↑</div> <!-- Ascending -->
+              <div *ngIf="!ascSortContactNumber">↓</div> <!-- Descending -->
+            </div>
+          </label>
+        </div>
+      </th>
+
+
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Example row binding data -->
+    <tr *ngFor="let carShowroom of carShowroomList">
+      <td> {{carShowroom.name}} </td>
+      <td>{{carShowroom.commercialRegistrationNumber }}</td>
+      <td> {{carShowroom.contactNumber}} </td>
+      <td>
+        <button class="btn btn-ghost btn-xs" (click)="viewCarShowroomDialog(carShowroom , form , dialogElement)">View</button>
+        <button class="btn btn-ghost btn-xs" (click)="updateCarShowroomDialog(carShowroom , form , dialogElement)">Edit</button>
+        <button class="btn btn-ghost btn-xs" (click)="deleteCarShowroom(carShowroom.id)" >Delete</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination (Optional) -->
+<div class="flex justify-center">
+  <div class="join">
+    <button class="join-item btn">«</button>
+    <button class="join-item btn">Page 1</button>
+    <button class="join-item btn">»</button>
+  </div>
+</div>
