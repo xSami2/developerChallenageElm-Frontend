@@ -1,5 +1,21 @@
-<button class="btn"  (click)="createDialog(dialogElement)">Create Car</button>
-<dialog  #dialogElement class="modal">
+<div class="flex justify-between">
+  <button class="btn" (click)="createDialog(dialogElement)">Create Car</button>
+
+  <label for="carShowroom" class="form-control w-full max-w-xs">
+    <div class="label">
+      <span class="label-text">Select Car Showroom</span>
+    </div>
+    <select id="carShowroom" class="select select-bordered" name="carShowroom" [(ngModel)]="selectedCarShowroomId" (change)="getAllCarByShowroom()">
+      <option value="" disabled selected>Select a showroom</option>
+      <option *ngFor="let carShowroom of carShowroomsNameList" [value]="carShowroom.id">
+        {{ carShowroom.name }}
+      </option>
+    </select>
+  </label>
+
+
+</div>
+<dialog #dialogElement class="modal">
   <div class="modal-box  w-80 max-w-5xl">
     <div (click)="closeDialog(dialogElement , form)" method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -123,16 +139,17 @@
                 name="carShowroom"
                 [disabled]="dialogMode === 'View'">
           <!-- Loop through carShowroomNamesList and create an option for each one -->
-          <option *ngFor="let carShowroom of carShowroomsNameList" [value]="carShowroom.id">{{ carShowroom.name }}</option>
+          <option *ngFor="let carShowroom of carShowroomsNameList" [value]="carShowroom.id">{{ carShowroom.name }}
+          </option>
         </select>
-
       </label>
 
       <div class="modal-action">
-        <button class="btn" type="submit" [disabled]="form.invalid" *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit</button>
+        <button class="btn" type="submit" [disabled]="form.invalid"
+                *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit
+        </button>
       </div>
     </form>
-
 
 
   </div>
@@ -140,104 +157,51 @@
 
 
 <!-- Data Table -->
-<div class="overflow-x-auto h-[39rem]">
+<div class="overflow-x-auto h-[33rem]">
   <table class="table">
     <thead>
     <tr>
-      <label class="flex justify-start" >
-        <th >
-          <div class="flex w-fit">
-            <label class="swap flex justify-start">
-              Vehicle Identification Number
-              <div class="flex" >
-                <!-- Arrow indicators for sorting -->
-                <div >↑</div> <!-- Ascending -->
-                <div >↓</div> <!-- Descending -->
-              </div>
-            </label>
-          </div>
+        <th>
+
+          Vehicle Identification Number
+
         </th>
-      </label>
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-           Car Maker
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+        <th>
+          Car Maker
+        </th>
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-            Car Model
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+        <th>
+
+          Car Model
+
+        </th>
 
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-           Model Year
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+        <th>
+
+          Model Year
+
+        </th>
 
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-            Price
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+        <th>
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-            Car Showroom Name
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+          Price
 
-      <th >
-        <div class="flex w-fit">
-          <label class="swap flex justify-start">
-           Contact Number
-            <div class="flex" >
-              <!-- Arrow indicators for sorting -->
-              <div >↑</div> <!-- Ascending -->
-              <div >↓</div> <!-- Descending -->
-            </div>
-          </label>
-        </div>
-      </th>
+        </th>
+
+        <th>
+
+          Car Showroom Name
+
+        </th>
+
+        <th>
+
+          Contact Number
+
+        </th>
 
 
     </tr>
@@ -245,20 +209,14 @@
     <tbody>
     <!-- Example row binding data -->
     <tr *ngFor="let car of carList">
-      <td> {{car.vehicleIdentificationNumber}} </td>
-      <td> {{car.maker}} </td>
-      <td> {{car.model}} </td>
-      <td> {{car.modelYear}} </td>
-      <td> {{car.price}} </td>
-      <td> {{car.carShowroom.name}} </td>
-      <td> {{car.carShowroom.contactNumber}} </td>
+      <td> {{ car.vehicleIdentificationNumber }}</td>
+      <td> {{ car.maker }}</td>
+      <td> {{ car.model }}</td>
+      <td> {{ car.modelYear }}</td>
+      <td> {{ car.price }}</td>
+      <td> {{ car.carShowroom.name }}</td>
+      <td> {{ car.carShowroom.contactNumber }}</td>
 
-
-      <td>
-        <button class="btn btn-ghost btn-xs" >View</button>
-        <button class="btn btn-ghost btn-xs" >Edit</button>
-        <button class="btn btn-ghost btn-xs" >Delete</button>
-      </td>
     </tr>
     </tbody>
   </table>

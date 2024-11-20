@@ -4,6 +4,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {Car} from '../../interface/Car';
 import {CarShowroom} from '../../interface/CarShowroom';
 import {CarService} from '../../service/CarService';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-car-management',
@@ -25,25 +26,38 @@ export class CarManagementComponent {
 
 
 
-
+  selectedCarShowroomId:string = ""
   newCar:Car = new Car()
   carShowroomsNameList:CarShowroom[] = []
   carList:Car[] = []
   dialogMode:String = "";
 
-  ngOnInit() {
+  Toast = Swal.mixin({
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+
+  async ngOnInit() {
     this.carService.getAllCar().subscribe(
       (carList: Car[]) => {
         this.carList = carList;
       }
     )
+    let responses = await this.carService.getcCrShowroomNamesList()
+    console.log(responses.data)
+    this.carShowroomsNameList = responses.data.data;
+
   }
 
  async createDialog(dialogElement:HTMLDialogElement) {
     this.dialogMode = "Create"
-    let responses = await this.carService.getcCrShowroomNamesList()
-    this.carShowroomsNameList = responses.data.data;
-   console.log(this.carShowroomsNameList)
     dialogElement.showModal()
   }
 
@@ -53,10 +67,40 @@ export class CarManagementComponent {
   }
 
   async submitCarForm(newCar: Car, form: any , dialog:HTMLDialogElement) {
-    console.log(newCar)
-   let respones = await this.carService.saveCar(newCar)
-    console.log(newCar)
-    console.log(respones)
+    try{
+      let responses = await this.carService.saveCar(newCar)
+      console.log(responses)
+
+     if (responses.status === 201) {
+        this.Toast.fire({
+          icon: 'success',
+          title: 'Created Car  successfully',
+        });
+        this.carList.push(responses.data.data);  // Add to the list
+        form.reset();
+        dialog.close()
+
+      }
+
+    }catch (error){
+      this.Toast.fire({
+        icon: 'error',
+        title: 'Could not save Car',
+      });
+    }
+
   }
+
+  async getAllCarByShowroom() {
+    console.log(
+      this.selectedCarShowroomId
+    )
+    let res = await this.carService.getAllCarByCarshowroom(this.selectedCarShowroomId)
+    this.carList = res.data.data
+
+  }
+
+
+
 
 }

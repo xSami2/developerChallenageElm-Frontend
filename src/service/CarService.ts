@@ -26,6 +26,16 @@ export class CarService {
     }
   }
 
+  async getAllCarByCarshowroom(carShowroomId: string | any) {
+    try {
+      const response = await axios.get(`http://localhost:9090/car/byCarshowroom/${carShowroomId}`);
+      return response;
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
+  }
+
 
 
   getAllCar() {
