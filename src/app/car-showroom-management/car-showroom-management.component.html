@@ -117,7 +117,7 @@
   </div>
 </dialog>
 <!-- Data Table -->
-<div class="overflow-x-auto h-[33rem]">
+<div class="overflow-x-auto h-[34rem]">
   <table class="table">
     <thead>
     <tr>
@@ -166,7 +166,7 @@
     </thead>
     <tbody>
     <!-- Example row binding data -->
-    <tr *ngFor="let carShowroom of carShowroomList">
+    <tr *ngFor="let carShowroom of carShowroomService.pagableObject.content">
       <td> {{carShowroom.name}} </td>
       <td>{{carShowroom.commercialRegistrationNumber }}</td>
       <td> {{carShowroom.contactNumber}} </td>
@@ -183,8 +183,24 @@
 <!-- Pagination (Optional) -->
 <div class="flex justify-center">
   <div class="join">
-    <button class="join-item btn">«</button>
-    <button class="join-item btn">Page 1</button>
-    <button class="join-item btn">»</button>
+    <!-- Previous Button: Disabled if on the first page -->
+    <button
+      class="join-item btn"
+      [disabled]="carShowroomService.pagableObject.first"
+      (click)="navigateToPage(carShowroomService.pagableObject.number - 1)">
+      «
+    </button>
+
+    <!-- Current Page Button -->
+    <button class="join-item btn" [disabled]="true">
+      Page {{ carShowroomService.pagableObject.number + 1 }} <!-- Page numbers are zero-based -->
+    </button>
+    <!-- Next Button: Disabled if on the last page -->
+    <button
+      class="join-item btn"
+      [disabled]="carShowroomService.pagableObject.last"
+      (click)="navigateToPage(carShowroomService.pagableObject.number + 1)">
+      »
+    </button>
   </div>
 </div>

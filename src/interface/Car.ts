@@ -5,9 +5,9 @@ export class Car {
   vehicleIdentificationNumber :string
   maker: string;
   model: string;
-  modelYear: number;
-  price: number;
-  carShowroom: CarShowroom;
+  modelYear: number |null;
+  price: number |null;
+  carShowroom: any;
   created_at?: Date;
   updated_at?: Date;
 
@@ -15,8 +15,8 @@ export class Car {
    this.vehicleIdentificationNumber = "";
     this.maker = "";
       this.model = "";
-      this.modelYear = 0;
-      this.price = 0;
+      this.modelYear = null;
+      this.price = null;
     this.carShowroom = new CarShowroom();
   }
 }

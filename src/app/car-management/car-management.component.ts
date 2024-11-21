@@ -5,6 +5,7 @@ import {Car} from '../../interface/Car';
 import {CarShowroom} from '../../interface/CarShowroom';
 import {CarService} from '../../service/CarService';
 import Swal from 'sweetalert2';
+import {filter} from 'rxjs';
 
 @Component({
   selector: 'app-car-management',
@@ -28,9 +29,8 @@ export class CarManagementComponent {
 
   selectedCarShowroomId:string = ""
   newCar:Car = new Car()
-  carShowroomsNameList:CarShowroom[] = []
-  carList:Car[] = []
   dialogMode:String = "";
+  filterApplied:Car = new Car()
 
   Toast = Swal.mixin({
     toast: true,
@@ -44,43 +44,39 @@ export class CarManagementComponent {
     }
   });
 
-  async ngOnInit() {
-    this.carService.getAllCar().subscribe(
-      (carList: Car[]) => {
-        this.carList = carList;
-      }
-    )
-    let responses = await this.carService.getcCrShowroomNamesList()
-    console.log(responses.data)
-    this.carShowroomsNameList = responses.data.data;
+   async ngOnInit() {
+    await this.carService.getAllCar(0, 10)
+    await this.carService.getCrShowroomNamesList()
 
   }
 
- async createDialog(dialogElement:HTMLDialogElement) {
+ async createDialog(dialogElementCar:HTMLDialogElement) {
     this.dialogMode = "Create"
-    dialogElement.showModal()
+   dialogElementCar.showModal()
   }
 
-  closeDialog(dialogElement:HTMLDialogElement , form:any) {
+  closeDialog(dialogElementCar:HTMLDialogElement , form:any) {
     form.reset()
-    dialogElement.close()
+    dialogElementCar.close()
   }
 
-  async submitCarForm(newCar: Car, form: any , dialog:HTMLDialogElement) {
+  async submitCarForm(newCar: Car, form: any , dialogElementCar:HTMLDialogElement) {
+
     try{
       let responses = await this.carService.saveCar(newCar)
       console.log(responses)
 
-     if (responses.status === 201) {
+     if (responses.status === 200) {
         this.Toast.fire({
           icon: 'success',
           title: 'Created Car  successfully',
         });
-        this.carList.push(responses.data.data);  // Add to the list
+        this.carService.pagableObject.content.push(responses.data.data);  // Add to the list
         form.reset();
-        dialog.close()
+       dialogElementCar.close()
 
       }
+      console.log(responses)
 
     }catch (error){
       this.Toast.fire({
@@ -95,12 +91,54 @@ export class CarManagementComponent {
     console.log(
       this.selectedCarShowroomId
     )
-    let res = await this.carService.getAllCarByCarshowroom(this.selectedCarShowroomId)
-    this.carList = res.data.data
+    if(this.selectedCarShowroomId === "none"){
+      console.log(this.carService.tableData)
+        this.carService.pagableObject.content = this.carService.tableData
+    }else{
+      let res = await this.carService.getAllCarByCarshowroom(this.selectedCarShowroomId)
+      this.carService.pagableObject.content = res.data.data
+    }
+
+
 
   }
 
+  removeFiliterCarByShowroom(){
+     this.carService.pagableObject.content = this.carService.tableData
+  }
 
+   navigateToPage(pageNumber: number) {
+    if (pageNumber < 0 || pageNumber >= this.carService.pagableObject.totalPages) {
+      return;
+    }
+
+    let res = this.carService.getAllCar(pageNumber, 10)
+  }
+
+  searchForm(dialogElementFiliter:HTMLDialogElement) {
+    dialogElementFiliter.showModal()
+  }
+
+ async ApplySearch(fiilter:Car , form:any ,  dialogElementFiliter:HTMLDialogElement) {
+   if (typeof fiilter.carShowroom == "string") {
+     let res = await this.carService.filterCars(fiilter)
+     dialogElementFiliter.close()
+     this.carService.pagableObject.content = res.data.data
+     form.reset();
+
+
+   } else {
+     fiilter.carShowroom = null
+     let res = await this.carService.filterCars(fiilter)
+     dialogElementFiliter.close()
+     this.carService.pagableObject.content = res.data.data
+     form.reset();
+
+   }
+
+
+
+  }
 
 
 }

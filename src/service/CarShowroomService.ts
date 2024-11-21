@@ -4,18 +4,19 @@ import {CarShowroom} from '../interface/CarShowroom';
 import {catchError, from, map} from 'rxjs';  // Import Axios
 import Swal from 'sweetalert2'
 import {Car} from '../interface/Car';
+import {pagebleObject} from '../interface/pagebleObject';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarShowroomService {
 
-  carShowroomNameList: CarShowroom[]  = new Array<CarShowroom>();
+  carShowroomList: CarShowroom[]  = [];
   savedCarShowroom: CarShowroom = new CarShowroom();
+  pagableObject:pagebleObject<CarShowroom> = new pagebleObject<CarShowroom>();
 
-  constructor() {
-    this.getAllCarShowroom()
-  }
+
+  constructor() {}
 
 
 
@@ -49,14 +50,35 @@ export class CarShowroomService {
     }
   }
 
-  async getAllCarShowroomSorted(sortBy: string ,sortDirection:string) {
+  // async getAllCarShowroomSorted(pageNumber:number,sortBy: string) {
+  //   console.log(pageNumber , sortBy );
+  //   try {
+  //     const response = await axios.get(`http://localhost:9090/carshowroom`, {
+  //       params:{
+  //         page: page,
+  //         size: size,
+  //         sortBy: sortBy
+  //       }
+  //     });
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error occurred:', error);
+  //     throw error;
+  //   }
+  // }
+
+  async getAllCarShowroom(page:number = 0 , size:number = 10 , sortBy:string) {
+    console.log("Sam")
+    console.log(page , size , sortBy);
     try {
-      const response = await axios.get(`http://localhost:9090/carshowroom/sorted`, {
-        params:{
-          sortBy:sortBy,
-          sortDirection:sortDirection
+      const response = await axios.get('http://localhost:9090/carshowroom', {
+        params: {
+          page: page,
+          size: size,
+          sortBy: sortBy
         }
       });
+      this.pagableObject = response.data.data;
       return response;
     } catch (error) {
       console.error('Error occurred:', error);
@@ -65,16 +87,6 @@ export class CarShowroomService {
   }
 
 
-  getAllCarShowroom() {
-    return from(
-      axios.get('http://localhost:9090/carshowroom')).pipe(
-      map(
-        response => response.data.data
-      ),
-      catchError(error => {
-        console.error('Error occurred:', error);
-        throw error;
-      })
-    );
-  }
+
+
 }

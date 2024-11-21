@@ -1,28 +1,36 @@
 <div class="flex justify-between">
-  <button class="btn" (click)="createDialog(dialogElement)">Create Car</button>
+ <div class="">
+   <button class="btn mr-2" (click)="createDialog(dialogElementCar)">Create Car</button>
+
+   <button class="btn mr-2" (click)="searchForm(dialogElementFiliter)">Search Form</button>
+
+   <button class="btn " (click)="carService.pagableObject.content = carService.tableData"> Remove Filter</button>
+
+ </div>
+
 
   <label for="carShowroom" class="form-control w-full max-w-xs">
     <div class="label">
       <span class="label-text">Select Car Showroom</span>
     </div>
     <select id="carShowroom" class="select select-bordered" name="carShowroom" [(ngModel)]="selectedCarShowroomId" (change)="getAllCarByShowroom()">
-      <option value="" disabled selected>Select a showroom</option>
-      <option *ngFor="let carShowroom of carShowroomsNameList" [value]="carShowroom.id">
+      <option  disabled selected>Select a showroom</option>
+      <option value="none" (change)="removeFiliterCarByShowroom()"  >All</option>
+      <option *ngFor="let carShowroom of carService.carShowroomList" [value]="carShowroom.id">
         {{ carShowroom.name }}
       </option>
     </select>
   </label>
 
-
 </div>
-<dialog #dialogElement class="modal">
+<dialog #dialogElementCar class="modal">
   <div class="modal-box  w-80 max-w-5xl">
-    <div (click)="closeDialog(dialogElement , form)" method="dialog">
+    <div (click)="closeDialog(dialogElementCar , form)" method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </div>
     <h3 class="text-lg font-bold">{{ dialogMode }} Car Showroom!</h3>
 
-    <form (submit)="submitCarForm(newCar , form , dialogElement)" #form="ngForm">
+    <form (submit)="submitCarForm(newCar , form , dialogElementCar)" #form="ngForm">
 
       <label class="form-control w-full mt-2">
         <div class="label">
@@ -139,18 +147,121 @@
                 name="carShowroom"
                 [disabled]="dialogMode === 'View'">
           <!-- Loop through carShowroomNamesList and create an option for each one -->
-          <option *ngFor="let carShowroom of carShowroomsNameList" [value]="carShowroom.id">{{ carShowroom.name }}
+          <option *ngFor="let carShowroom of carService.carShowroomList" [value]="carShowroom.id">{{ carShowroom.name }}
           </option>
         </select>
       </label>
 
       <div class="modal-action">
-        <button class="btn" type="submit" [disabled]="form.invalid"
-                *ngIf="dialogMode === 'Create' || dialogMode === 'Update'">Submit
+        <button class="btn" type="submit" [disabled]="form.invalid">Submit
         </button>
       </div>
     </form>
 
+
+  </div>
+</dialog>
+<!-- Open the modal using ID.showModal() method -->
+<dialog #dialogElementFiliter class="modal">
+  <div class="modal-box  w-80 max-w-5xl">
+    <div (click)="closeDialog(dialogElementFiliter , form)" method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </div>
+    <h3 class="text-lg font-bold">Search Car Showroom!</h3>
+
+    <form (submit)="ApplySearch(filterApplied , formSearch , dialogElementFiliter)" #formSearch="ngForm">
+
+
+
+      <!-- Car Showroom Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Maker</span>
+        </div>
+        <input
+          type="text"
+          required
+          [(ngModel)]="filterApplied.maker"
+          name="carMaker"
+          maxlength="25"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #carMaker="ngModel"
+        />
+      </label>
+
+      <!-- Commercial Registration Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Car Model</span>
+        </div>
+        <input
+          type="text"
+          required
+          [(ngModel)]="filterApplied.model"
+          name="carModel"
+          maxlength="25"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #carModel="ngModel"
+        />
+      </label>
+
+      <!-- Manager Name -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">Model Year</span>
+        </div>
+        <input
+          type="number"
+          [(ngModel)]="filterApplied.modelYear"
+          maxlength="4"
+          name="modelYear"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #modelYear=ngModel
+        />
+
+      </label>
+
+      <!-- Contact Number -->
+      <label class="form-control w-full mt-2">
+        <div class="label">
+          <span class="label-text">*Price</span>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="filterApplied.price"
+          name="carPrice"
+
+
+          maxlength="15"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
+          #carPrice="ngModel"
+        />
+
+      </label>
+
+      <!-- Address -->
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Select Car Showroom</span>
+        </div>
+        <select class="select select-bordered"
+                [(ngModel)]="filterApplied.carShowroom"
+                name="carShowroom">
+          <!-- Loop through carShowroomNamesList and create an option for each one -->
+          <option *ngFor="let carShowroom of carService.carShowroomList" [value]="carShowroom.id">{{ carShowroom.name }}
+          </option>
+        </select>
+      </label>
+
+      <div class="modal-action">
+        <button class="btn" type="submit">Submit
+        </button>
+      </div>
+    </form>
 
   </div>
 </dialog>
@@ -208,7 +319,7 @@
     </thead>
     <tbody>
     <!-- Example row binding data -->
-    <tr *ngFor="let car of carList">
+    <tr *ngFor="let car of carService.pagableObject.content">
       <td> {{ car.vehicleIdentificationNumber }}</td>
       <td> {{ car.maker }}</td>
       <td> {{ car.model }}</td>
@@ -225,8 +336,24 @@
 <!-- Pagination (Optional) -->
 <div class="flex justify-center">
   <div class="join">
-    <button class="join-item btn">«</button>
-    <button class="join-item btn">Page 1</button>
-    <button class="join-item btn">»</button>
+    <!-- Previous Button: Disabled if on the first page -->
+    <button
+      class="join-item btn"
+      [disabled]="carService.pagableObject.first"
+      (click)="navigateToPage(carService.pagableObject.number - 1)">
+      «
+    </button>
+
+    <!-- Current Page Button -->
+    <button class="join-item btn" [disabled]="true">
+      Page {{ carService.pagableObject.number + 1 }} <!-- Page numbers are zero-based -->
+    </button>
+    <!-- Next Button: Disabled if on the last page -->
+    <button
+      class="join-item btn"
+      [disabled]="carService.pagableObject.last"
+      (click)="navigateToPage(carService.pagableObject.number + 1)">
+      »
+    </button>
   </div>
 </div>

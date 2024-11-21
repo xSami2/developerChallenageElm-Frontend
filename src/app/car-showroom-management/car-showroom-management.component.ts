@@ -5,6 +5,8 @@ import {CommonModule, NgForOf, NgIf} from '@angular/common';
 import Swal from 'sweetalert2'
 import {CarShowroom} from '../../interface/CarShowroom';
 import {CarShowroomService} from '../../service/CarShowroomService';
+import {pagebleObject} from '../../interface/pagebleObject';
+import {Car} from '../../interface/Car';
 
 @Component({
   selector: 'app-car-showroom-management',
@@ -13,6 +15,12 @@ import {CarShowroomService} from '../../service/CarShowroomService';
   templateUrl: './car-showroom-management.component.html',
 })
 export class CarShowroomManagementComponent {
+
+
+
+
+
+  sortFilter: string = 'name,asc';
 
   nameSortVisibility:boolean = false;
   commercialRegistrationNumberSortVisibility:boolean = false;
@@ -42,12 +50,8 @@ export class CarShowroomManagementComponent {
   constructor(protected carShowroomService: CarShowroomService) {
   }
 
-  ngOnInit() {
-    this.carShowroomService.getAllCarShowroom().subscribe(
-      (carShowrooms: CarShowroom[]) => {
-        this.carShowroomList = carShowrooms;
-      }
-    )
+  async ngOnInit() {
+    await this.carShowroomService.getAllCarShowroom(0,10,"name,asc")
   }
 
   async submitCarShowroomForm(carShowroom: CarShowroom, form: any , dialog:HTMLDialogElement) {
@@ -72,7 +76,8 @@ export class CarShowroomManagementComponent {
           icon: 'success',
           title: 'Created Car showroom successfully',
         });
-        this.carShowroomList.push(response.data.data);  // Add to the list
+        console.log(response)
+        this.carShowroomService.pagableObject.content.push(response.data.data);  // Add to the list
         form.reset();
         dialog.close()
 
@@ -115,8 +120,8 @@ export class CarShowroomManagementComponent {
   async deleteCarShowroom(carShowroomId: string | undefined) {
     let response = await this.carShowroomService.deleteCarShowroomById(carShowroomId);
     if (response.status === 200) {
-      const index = this.carShowroomList.findIndex(showroom => showroom.id === carShowroomId);
-      this.carShowroomList.splice(index, 1);
+      const index = this.carShowroomService.pagableObject.content.findIndex((showroom:CarShowroom) => showroom.id === carShowroomId);
+      this.carShowroomService.pagableObject.content.splice(index, 1);
       this.Toast.fire({
         icon: 'success',
         title: 'Deleted Car showroom successfully',
@@ -127,23 +132,28 @@ export class CarShowroomManagementComponent {
   async sortByName()  {
     this.nameSortVisibility = true;
     if (this.ascSortName){
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("name" ,"DESC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"name,asc")
+      this.carShowroomService.pagableObject = respones.data.data
+      console.log(respones)
     }else{
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("name" ,"ASC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"name,desc")
+      this.carShowroomService.pagableObject = respones.data.data
+      console.log(respones)
+
     }
     this.ascSortName = !this.ascSortName
   }
 
   async sortByCommercialRegistrationNumber()  {
     this.commercialRegistrationNumberSortVisibility = true
+    console.log(this.carShowroomService.pagableObject)
+
     if (this.ascSortCommercialRegistrationNumber){
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("commercialRegistrationNumber" ,"DESC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"commercialRegistrationNumber,desc")
+      this.carShowroomService.pagableObject = respones.data.data
     }else{
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("commercialRegistrationNumber" ,"ASC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"commercialRegistrationNumber,asc")
+      this.carShowroomService.pagableObject = respones.data.data
     }
     this.ascSortCommercialRegistrationNumber = !this.ascSortCommercialRegistrationNumber
 
@@ -151,13 +161,14 @@ export class CarShowroomManagementComponent {
   }
 
   async sortByContactNumber()  {
+    console.log("Gelo")
     this.contactNumberSortVisibility = true
     if (this.ascSortContactNumber){
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("contactNumber" ,"DESC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"contactNumber,desc")
+      this.carShowroomService.pagableObject = respones.data.data
     }else{
-      let respones = await this.carShowroomService.getAllCarShowroomSorted("contactNumber" ,"ASC")
-      this.carShowroomList = respones.data.data
+      let respones = await this.carShowroomService.getAllCarShowroom(this.carShowroomService.pagableObject.number,10,"contactNumber,asc")
+      this.carShowroomService.pagableObject = respones.data.data
     }
     this.ascSortContactNumber = !this.ascSortContactNumber
   }
@@ -168,10 +179,19 @@ export class CarShowroomManagementComponent {
 
 
   updateCarShowroom(updatedShowroom: CarShowroom) {
-    const index = this.carShowroomList.findIndex(showroom => showroom.id === updatedShowroom.id);
+    const index = this.carShowroomService.pagableObject.content.findIndex((showroom:CarShowroom) => showroom.id === updatedShowroom.id);
     if (index !== -1) {
-      this.carShowroomList[index] = { ...this.carShowroomList[index], ...updatedShowroom };
+      this.carShowroomService.pagableObject.content[index] = { ...this.carShowroomService.pagableObject.content[index], ...updatedShowroom };
     }
+  }
+
+  async navigateToPage(pageNumber: number) {
+    if (pageNumber < 0 || pageNumber >= this.carShowroomService.pagableObject.totalPages) {
+      return;
+    }
+
+    let res = await this.carShowroomService.getAllCarShowroom( pageNumber , 10 , this.sortFilter)
+    console.log(this.carShowroomService.pagableObject)
   }
 
 }
