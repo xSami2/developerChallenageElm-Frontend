@@ -21,6 +21,7 @@ The application is divided into two main components:
 
  ## Database Schema
 
+![Database-Schema](https://github.com/user-attachments/assets/20a7ef80-3d27-4870-9f3c-5b7f4d84b2d8)
 
 ## Installation
 
