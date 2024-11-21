@@ -31,20 +31,18 @@ git clone https://github.com/xSami2/developerChallenageElm-Frontend.git
 git clone https://github.com/xSami2/Elm-DeveloperChallenge-Backend.git
 ```
 
-Now for Building the Image make sure you have docker installed in your Device 
-
 - Navgaite to Front-end application
 
 ```cmd
  cd developerChallenageElm-Frontend
 ```
 
-Install All Depdency 
+- Install All Depdency 
 
 ```cmd
  npm i
 ```
-Now Run the Applction
+- Now Run the Applction
 
 ```cmd
  ng serve
