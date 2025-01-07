@@ -75,7 +75,7 @@ export class CarService {
 
    async filterCars(car:Car) {
      try {
-       const response = await axios.get('http://localhost:9090/cars/filter', {
+       const response = await axios.get('http://localhost:9090/car/filter', {
          params: {
            maker: car.maker ,
            model: car.model ,
